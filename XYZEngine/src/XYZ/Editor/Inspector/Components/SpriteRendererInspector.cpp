@@ -13,7 +13,7 @@ namespace XYZ {
 	}
 	bool SpriteRendererInspector::OnEditorRender()
 	{
-		return EditorHelper::DrawComponent<SpriteRenderer>("Sprite Renderer", m_Context, [&](auto& component) {
+		bool result = EditorHelper::DrawComponent<SpriteRenderer>("Sprite Renderer", m_Context, [&](auto& component) {
 
 			EditorHelper::DrawColorControl("Color", component.Color);
 			// Material
@@ -79,6 +79,8 @@ namespace XYZ {
 
 		if (m_Dialog && m_DialogOpen)
 			m_Dialog();
+
+		return result;
 	}
 
 	void SpriteRendererInspector::selectSubTextureDialog()
@@ -93,12 +95,15 @@ namespace XYZ {
 				{
 					const Ref<Texture>& texture = subTexture->GetTexture();
 					const glm::vec4& texCoords = subTexture->GetTexCoords();
+					ImGui::PushID(subTexture->FileName.c_str());
 					if (ImGui::ImageButton((void*)(uint64_t)texture->GetRendererID(), { 50.0f, 50.0f }, { texCoords.x, texCoords.w }, { texCoords.z, texCoords.y }))
 					{
 						m_Context.GetComponent<SpriteRenderer>().SubTexture = subTexture;
 						m_DialogOpen = false;
+						ImGui::PopID();
 						break;
 					}
+					ImGui::PopID();
 				}
 			}
 		}
